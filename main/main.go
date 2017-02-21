@@ -1,41 +1,27 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"log"
 
-	"github.com/goodatlas/grpctest"
 	"github.com/goodatlas/grpctest/counter"
+	"github.com/goodatlas/grpctest/frontend"
 )
 
-func getType(args []string) (string, error) {
-	if len(args) < 1 {
-		return "", errors.New("Missing type argument")
-	}
-
-	if args[0] != "counter" && args[0] != "client" {
-		return "", errors.New("Unknown type argument: " + args[0])
-	}
-
-	return args[0], nil
-}
-
 func main() {
-	hostaddr := flag.String("hostaddr", "localhost:50051", "Host service address")
-	bindaddr := flag.String("bindaddr", "localhost:50051", "Address for binding service")
+	upstreamaddr := flag.String("upstream", "localhost:50051", "Upstream service address")
+	bindaddr := flag.String("bind", "localhost:50051", "Address for binding service")
+
 	flag.Parse()
 
-	t, err := getType(flag.Args())
-
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	switch t {
-	case "client":
-		grpctest.StartClient(*hostaddr, *bindaddr)
+	switch t := flag.Arg(0); t {
+	case "frontend":
+		frontend.Start(*bindaddr, *upstreamaddr)
 	case "counter":
 		counter.Start(*bindaddr)
+	case "":
+		log.Fatal("Missing type argument")
+	default:
+		log.Fatalf("Unknown type argument: %s", t)
 	}
 }

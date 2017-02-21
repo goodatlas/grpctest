@@ -1,4 +1,4 @@
-package grpctest
+package frontend
 
 import (
 	"fmt"
@@ -27,13 +27,15 @@ func randID(n int) string {
 	return string(b)
 }
 
-// StartClient starts client
-func StartClient(hostaddr, bindaddr string) {
-	conn, err := grpc.Dial(hostaddr, grpc.WithInsecure())
+// Start starts frontend service
+func Start(bindaddr, upstreamaddr string) {
+	conn, err := grpc.Dial(upstreamaddr, grpc.WithInsecure())
 
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
+
+	fmt.Printf("Connected to upstream: %s\n", upstreamaddr)
 
 	defer conn.Close()
 	c := counter.NewCounterClient(conn)
@@ -49,5 +51,6 @@ func StartClient(hostaddr, bindaddr string) {
 		fmt.Fprintf(w, "Name: %s\nCount: %d\n", name, ir.Count)
 	})
 
+	fmt.Printf("Binding to: %s\n", bindaddr)
 	http.ListenAndServe(bindaddr, nil)
 }
