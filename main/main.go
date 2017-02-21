@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/goodatlas/grpctest"
+	"github.com/goodatlas/grpctest/counter"
 )
 
 func getType(args []string) (string, error) {
@@ -13,7 +14,7 @@ func getType(args []string) (string, error) {
 		return "", errors.New("Missing type argument")
 	}
 
-	if args[0] != "server" && args[0] != "client" {
+	if args[0] != "counter" && args[0] != "client" {
 		return "", errors.New("Unknown type argument: " + args[0])
 	}
 
@@ -34,7 +35,7 @@ func main() {
 	switch t {
 	case "client":
 		grpctest.StartClient(*hostaddr, *bindaddr)
-	case "server":
-		grpctest.StartServer(*bindaddr)
+	case "counter":
+		counter.Start(*bindaddr)
 	}
 }

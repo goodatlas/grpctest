@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+
+	"github.com/goodatlas/grpctest/counter"
 )
 
 func randID(n int) string {
@@ -34,11 +36,11 @@ func StartClient(hostaddr, bindaddr string) {
 	}
 
 	defer conn.Close()
-	c := NewCounterClient(conn)
+	c := counter.NewCounterClient(conn)
 	name := "client-" + randID(5)
 
 	http.HandleFunc("/count", func(w http.ResponseWriter, r *http.Request) {
-		ir, err := c.Increment(context.Background(), &IncrementRequest{Name: name})
+		ir, err := c.Increment(context.Background(), &counter.IncrementRequest{Name: name})
 
 		if err != nil {
 			log.Fatalf("could not increment: %v", err)

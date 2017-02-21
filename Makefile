@@ -8,7 +8,7 @@ all: \
 
 buildb:
 	@echo "Building binary..."
-	@protoc counter.proto --go_out=plugins=grpc:.
+	@protoc counter/counter.proto --go_out=plugins=grpc:.
 	@GOARCH=amd64 GOOS=linux go build -o grpctestapp main/main.go
 
 buildi:

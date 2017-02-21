@@ -1,4 +1,4 @@
-package grpctest
+package counter
 
 import (
 	"fmt"
@@ -14,16 +14,16 @@ import (
 )
 
 type server struct {
-	data         map[string]int32
-	mutex        *sync.Mutex
-	linesPrinted int
+	data  map[string]int32
+	mutex *sync.Mutex
+	out   *output
 }
 
 func newServer() *server {
 	return &server{
-		data:         make(map[string]int32),
-		mutex:        &sync.Mutex{},
-		linesPrinted: 0,
+		data:  make(map[string]int32),
+		mutex: &sync.Mutex{},
+		out:   &output{linesPrinted: 0},
 	}
 }
 
@@ -48,9 +48,9 @@ func (s *server) Increment(ctx context.Context, r *IncrementRequest) (*Increment
 
 func (s *server) printData() {
 
-	if s.linesPrinted > 0 {
-		fmt.Printf("\x1b[%dA", s.linesPrinted)
-	} else {
+	s.out.reset()
+
+	if s.out.linesPrinted == 0 {
 		fmt.Println("Hits:")
 	}
 
@@ -59,11 +59,11 @@ func (s *server) printData() {
 		fmt.Println("")
 	}
 
-	s.linesPrinted = len(s.data)
+	s.out.linesPrinted = len(s.data)
 }
 
-// StartServer runs RPC counter server
-func StartServer(bindadrr string) {
+// Start runs RPC counter server
+func Start(bindadrr string) {
 
 	lis, err := net.Listen("tcp", bindadrr)
 
@@ -79,5 +79,15 @@ func StartServer(bindadrr string) {
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
+	}
+}
+
+type output struct {
+	linesPrinted int
+}
+
+func (o *output) reset() {
+	if o.linesPrinted > 0 {
+		fmt.Printf("\x1b[%dA", o.linesPrinted)
 	}
 }
