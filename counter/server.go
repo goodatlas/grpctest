@@ -68,7 +68,7 @@ func Start(bindadrr string) {
 	lis, err := net.Listen("tcp", bindadrr)
 
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatal(err.Error())
 	}
 
 	s := grpc.NewServer()
@@ -78,7 +78,7 @@ func Start(bindadrr string) {
 	reflection.Register(s)
 
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Fatal(err.Error())
 	}
 }
 
