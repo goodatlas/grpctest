@@ -6,6 +6,7 @@ import (
 
 	"github.com/goodatlas/grpctest/counter"
 	"github.com/goodatlas/grpctest/frontend"
+	"github.com/goodatlas/grpctest/proxy"
 )
 
 func main() {
@@ -19,6 +20,8 @@ func main() {
 		frontend.Start(*bindaddr, *upstreamaddr)
 	case "counter":
 		counter.Start(*bindaddr)
+	case "proxy":
+		proxy.Start(*bindaddr, *upstreamaddr)
 	case "":
 		log.Fatal("Missing type argument")
 	default:
