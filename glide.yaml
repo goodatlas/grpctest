@@ -1,0 +1,7 @@
+package: .
+import:
+- package: google.golang.org/grpc
+  version: ~1.0.5
+- package: golang.org/x/net
+  subpackages:
+  - context

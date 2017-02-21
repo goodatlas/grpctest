@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package grpctest;
+
+// The greeting service definition.
+service Counter {
+  // Sends a greeting
+  rpc Increment (IncrementRequest) returns (IncrementResponse) {}
+}
+
+// The request message containing the user's name.
+message IncrementRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message IncrementResponse {
+  int32 count = 1;
+}
