@@ -9,6 +9,8 @@ import (
 
 	"golang.org/x/net/context"
 
+	"sort"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -54,9 +56,21 @@ func (s *server) printData() {
 		fmt.Println("Hits:")
 	}
 
-	for k, v := range s.data {
-		fmt.Printf(" - %s: %d", k, v)
-		fmt.Println("")
+	keys := []string{}
+	maxlen := 0
+
+	for k := range s.data {
+		keys = append(keys, k)
+
+		if l := len(k); l > maxlen {
+			maxlen = l
+		}
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		fmt.Printf(fmt.Sprintf("%%%d.%ds", maxlen, maxlen)+": %d\n", k, s.data[k])
 	}
 
 	s.out.linesPrinted = len(s.data)
