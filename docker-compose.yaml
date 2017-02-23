@@ -3,16 +3,28 @@ version: "3"
 services:
   counter:
     image: grpctestapp
-    command: ["/grpctestapp", "-bindaddr", "0.0.0.0:50051", "server"]
+    command: ["/grpctestapp", "-bind=0.0.0.0:50051", "counter"]
     ports:
       - "50051"
     deploy:
       replicas: 1
 
-  client:
+  proxy:
     image: grpctestapp
-    command: ["/grpctestapp", "-hostaddr", "counter:50051", "-bindaddr", "0.0.0.0:8080", "client"]
+    command: ["/grpctestapp", "-upstream=counter:50051", "-bind=0.0.0.0:50052", "proxy"]
     ports:
-      - "8080:8080"
+      - "50052"
+    depends_on:
+      - counter
     deploy:
       replicas: 3
+
+  frontend:
+    image: grpctestapp
+    command: ["/grpctestapp", "-upstream=tasks.proxy:50052", "-bind=0.0.0.0:8080", "-dnslb=true", "frontend"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - proxy
+    deploy:
+      replicas: 2
