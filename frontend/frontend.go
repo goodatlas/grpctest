@@ -5,14 +5,16 @@ import (
 	"log"
 	"net/http"
 
+	"google.golang.org/grpc/grpclog"
+
 	"golang.org/x/net/context"
 
 	"github.com/goodatlas/grpctest/counter"
 )
 
 // Start starts frontend service
-func Start(bindaddr, upstreamaddr string) {
-	c, err := counter.NewClient(upstreamaddr, "frontend")
+func Start(bindaddr, upstreamaddr string, dnslb bool) {
+	c, err := counter.NewClient(upstreamaddr, dnslb, "frontend")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -30,6 +32,6 @@ func Start(bindaddr, upstreamaddr string) {
 		fmt.Fprintf(w, "Name: %s\nCount: %d\n", c.Name, ir.Count)
 	})
 
-	fmt.Printf("Binding to: %s\n", bindaddr)
+	grpclog.Printf("Binding to: %s\n", bindaddr)
 	http.ListenAndServe(bindaddr, nil)
 }

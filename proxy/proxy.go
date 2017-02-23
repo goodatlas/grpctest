@@ -33,8 +33,8 @@ func (p *proxy) Increment(ctx context.Context, r *counter.IncrementRequest) (*co
 }
 
 // Start starts frontend service
-func Start(bindaddr, upstreamaddr string) {
-	c, err := counter.NewClient(upstreamaddr, "proxy")
+func Start(bindaddr, upstreamaddr string, dnslb bool) {
+	c, err := counter.NewClient(upstreamaddr, dnslb, "proxy")
 
 	if err != nil {
 		log.Fatal(err.Error())
